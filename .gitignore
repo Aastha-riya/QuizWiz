@@ -1,0 +1,50 @@
+# Compiled class files
+*.class
+webapp/WEB-INF/classes/
+
+# Log files
+*.log
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# MySQL Connector (download separately)
+webapp/WEB-INF/lib/*.jar
+
+# IDE specific files
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Build directories
+target/
+build/
+dist/
+out/
+
+# Tomcat
+/tomcat/
+
+# Database backups
+*.sql.backup
+backup_*.sql
+
+# Environment files
+.env
+config.properties
