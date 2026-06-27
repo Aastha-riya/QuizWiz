@@ -31,66 +31,7 @@
          SERVLETS
          ================================================================ -->
 
-    <!-- #1 LoginServlet — handles GET (show form) and POST (authenticate) -->
-    <servlet>
-        <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.LoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login</url-pattern>
-    </servlet-mapping>
-
-    <!-- #2 RegisterServlet — handles new student self-registration -->
-    <servlet>
-        <servlet-name>RegisterServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.RegisterServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>RegisterServlet</servlet-name>
-        <url-pattern>/register</url-pattern>
-    </servlet-mapping>
-
-    <!-- #3 LogoutServlet — invalidates session and redirects to /login -->
-    <servlet>
-        <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.LogoutServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LogoutServlet</servlet-name>
-        <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-
-    <!-- QuizServlet — loads questions and forwards to quiz.jsp -->
-    <servlet>
-        <servlet-name>QuizServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.QuizServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>QuizServlet</servlet-name>
-        <url-pattern>/quiz</url-pattern>
-    </servlet-mapping>
-
-    <!-- SubmitServlet — scores the quiz and forwards to result.jsp.
-         Also validates started_at for server-side time enforcement (#13). -->
-    <servlet>
-        <servlet-name>SubmitServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.SubmitServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SubmitServlet</servlet-name>
-        <url-pattern>/submit</url-pattern>
-    </servlet-mapping>
-
-    <!-- #4 AdminServlet — admin dashboard; protected by AuthFilter below -->
-    <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>com.quizwiz.servlet.AdminServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/admin/dashboard</url-pattern>
-    </servlet-mapping>
+    
 
 
     <!-- ================================================================
