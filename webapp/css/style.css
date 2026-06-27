@@ -1,9 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /**
  * QuizWiz - Modern Clean Stylesheet
  * Responsive design with card-based layout
  */
 
-/* Reset and Base Styles */
+/* ─── CSS Variables ─────────────────────────────────────── */
+:root {
+    --primary:    #667eea;
+    --secondary:  #764ba2;
+    --danger:     #e74c3c;
+    --warning:    #e67e22;
+    --success:    #2ecc71;
+    --surface:    #ffffff;
+    --shadow:     0 10px 30px rgba(0, 0, 0, 0.08);
+    --transition: .25s ease;
+}
+
+/* ─── Timer Progress Bar ────────────────────────────────── */
+.timer-progress-track {
+    background: #e0e0e0;
+    border-radius: 6px;
+    height: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.timer-progress-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    background: var(--primary);
+    transition: width 0.9s linear, background-color 0.5s ease;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+.timer-progress-fill.progress-warning {
+    background: var(--warning);
+}
+
+.timer-progress-fill.progress-critical {
+    background: var(--danger);
+}
+
+/* ─── Timer Critical State (last 10 seconds) ───────────── */
+#timer.timer-critical {
+    color: var(--danger);
+    animation: flash 0.5s infinite;
+    text-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+}
+
+/* ─── Timer Warning Banner ──────────────────────────────── */
+.timer-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--danger);
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+}
+
+.timer-banner.visible {
+    transform: translateY(0);
+}
+
+.timer-banner .banner-close {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+.timer-banner .banner-close:hover {
+    opacity: 1;
+}
+
+/* ─── Reset and Base Styles ─────────────────────────────── */
 * {
     margin: 0;
     padding: 0;
@@ -11,45 +103,73 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(-45deg, var(--primary), var(--secondary), #6dd5fa, var(--primary));
+    background-size: 400% 400%;
+    animation: bgMove 15s ease infinite, fadeIn 0.5s ease;
     min-height: 100vh;
     padding: 20px;
     line-height: 1.6;
 }
 
-/* Container */
+@keyframes bgMove {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Container ─────────────────────────────────────────── */
 .container {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Timer Container */
+/* ─── Timer Container ───────────────────────────────────── */
 .timer-container {
-    background: white;
+    background: rgba(255, 255, 255, 0.85); /* Safari fallback */
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     text-align: center;
 }
 
+@supports (backdrop-filter: blur(20px)) {
+    .timer-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}
+
 .timer-container h2 {
-    color: #333;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 1.5rem;
     font-weight: 600;
 }
 
 #timer {
-    color: #667eea;
+    color: var(--surface);
     font-size: 2rem;
     font-weight: bold;
     font-family: 'Courier New', monospace;
 }
 
 #timer.timer-warning {
-    color: #e74c3c;
+    color: var(--danger);
     animation: pulse 1s infinite;
 }
 
@@ -58,14 +178,21 @@ body {
     50% { opacity: 0.6; }
 }
 
-/* Quiz Header */
+/* ─── Quiz Header ───────────────────────────────────────── */
 .quiz-header {
-    background: white;
+    background: var(--surface);
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     text-align: center;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
 }
 
 .quiz-header h1 {
@@ -79,23 +206,23 @@ body {
     font-size: 1.1rem;
 }
 
-/* Question Card */
+/* ─── Question Card ─────────────────────────────────────── */
 .question-card {
-    background: white;
+    background: var(--surface);
     border-radius: 12px;
     padding: 30px;
     margin-bottom: 25px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .question-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-6px) scale(1.01);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .question-card h3 {
-    color: #667eea;
+    color: var(--primary);
     font-size: 1.3rem;
     margin-bottom: 15px;
 }
@@ -108,7 +235,7 @@ body {
     line-height: 1.8;
 }
 
-/* Options */
+/* ─── Options ───────────────────────────────────────────── */
 .options {
     display: flex;
     flex-direction: column;
@@ -122,12 +249,13 @@ body {
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition), border-color var(--transition);
 }
 
 .option:hover {
-    border-color: #667eea;
+    border-color: var(--primary);
     background-color: #f8f9ff;
+    transform: translateX(8px);
 }
 
 .option input[type="radio"] {
@@ -145,10 +273,54 @@ body {
 
 .option input[type="radio"]:checked + span {
     font-weight: 600;
-    color: #667eea;
+    color: var(--primary);
 }
 
-/* Submit Container */
+.option:has(input:checked) {
+    border-color: var(--primary);
+    background: #eef2ff;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.25);
+}
+
+/* Fallback for browsers without :has() support — class toggled via JS */
+.option.selected {
+    border-color: var(--primary);
+    background: #eef2ff;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.25);
+}
+
+/* ─── Loading State ─────────────────────────────────────── */
+.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.loading::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ─── Keyboard Focus Styles (Accessibility) ─────────────── */
+.option:focus-within,
+.submit-btn:focus-visible,
+.btn:focus-visible {
+    outline: 3px solid rgba(102, 126, 234, 0.35);
+    outline-offset: 4px;
+}
+
+/* ─── Submit Container ──────────────────────────────────── */
 .submit-container {
     text-align: center;
     margin-top: 40px;
@@ -156,7 +328,7 @@ body {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
     font-size: 1.2rem;
     font-weight: 600;
@@ -165,11 +337,31 @@ body {
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s;
+    transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition), border-color var(--transition);
+    overflow: hidden;
+    position: relative;
+}
+
+.submit-btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.5s;
+}
+
+.submit-btn:active::after {
+    width: 300px;
+    height: 300px;
 }
 
 .submit-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-6px) scale(1.01);
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
@@ -177,13 +369,21 @@ body {
     transform: translateY(0);
 }
 
-/* Result Container */
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ─── Result Container ──────────────────────────────────── */
 .result-container {
-    background: white;
+    background: var(--surface);
     border-radius: 12px;
     padding: 50px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     text-align: center;
+    border-top: 8px solid var(--primary);
 }
 
 .result-header h1 {
@@ -202,7 +402,7 @@ body {
 }
 
 .score-text {
-    color: #667eea;
+    color: var(--primary);
     font-size: 3rem;
     font-weight: bold;
     margin-bottom: 10px;
@@ -239,7 +439,7 @@ body {
     color: #856404;
 }
 
-/* Action Buttons */
+/* ─── Action Buttons ────────────────────────────────────── */
 .action-buttons {
     display: flex;
     gap: 20px;
@@ -253,33 +453,174 @@ body {
     font-weight: 600;
     border-radius: 50px;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition), border-color var(--transition);
     display: inline-block;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
+    transform: translateY(-6px) scale(1.01);
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
 .btn-secondary {
-    background: white;
-    color: #667eea;
-    border: 2px solid #667eea;
+    background: var(--surface);
+    color: var(--primary);
+    border: 2px solid var(--primary);
 }
 
 .btn-secondary:hover {
-    background: #667eea;
+    background: var(--primary);
     color: white;
 }
 
-/* Error Message */
+/* ─── Error Card ────────────────────────────────────────── */
+.error-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 60px 50px 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    text-align: center;
+    max-width: 600px;
+    margin: 60px auto 0;
+}
+
+.error-code {
+    font-size: 7rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.error-illustration {
+    font-size: 4rem;
+    margin: 10px 0 20px;
+    display: block;
+}
+
+.error-card h1 {
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.error-card .error-description {
+    color: #666;
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.error-card .error-url {
+    display: inline-block;
+    background: #f4f4f8;
+    color: #888;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    margin-bottom: 36px;
+    word-break: break-all;
+}
+
+.error-card .action-buttons {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.error-footer {
+    margin-top: 40px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Responsive adjustments for error card */
+@media (max-width: 640px) {
+    .error-card {
+        padding: 40px 24px 30px;
+        margin-top: 30px;
+    }
+
+    .error-code {
+        font-size: 5rem;
+    }
+
+    .error-card h1 {
+        font-size: 1.4rem;
+    }
+}
+
+/* ─── Error Meta (ID + Timestamp rows) ─────────────────── */
+.error-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.error-meta-label {
+    color: #999;
+    font-weight: 500;
+}
+
+.error-meta-value {
+    background: #f4f4f8;
+    color: #555;
+    font-family: 'Courier New', monospace;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+}
+
+/* Support link below action buttons */
+.error-support {
+    margin-top: 24px;
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.error-support a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.error-support a:hover {
+    text-decoration: underline;
+}
+
+/* Dev-mode stack trace block */
+.error-stack {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+    text-align: left;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #c0392b;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* ─── Error Message ─────────────────────────────────────── */
 .error-message {
     background: #f8d7da;
     color: #721c24;
@@ -289,33 +630,67 @@ body {
     text-align: center;
 }
 
-/* Responsive Design */
+/* ─── Custom Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* ─── Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ─── Responsive Design ─────────────────────────────────── */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
     }
-    
-    .quiz-header h1 {
+
+    .quiz-header {
         font-size: 2rem;
+        padding: 22px;
     }
-    
+
     .question-card {
-        padding: 20px;
+        padding: 18px;
     }
-    
+
+    .timer-container {
+        padding: 15px;
+    }
+
     .submit-btn {
         padding: 15px 40px;
         font-size: 1rem;
     }
-    
+
     .score-text {
         font-size: 2.5rem;
     }
-    
+
     .action-buttons {
         flex-direction: column;
     }
-    
+
     .btn {
         width: 100%;
     }
@@ -325,12 +700,41 @@ body {
     .quiz-header h1 {
         font-size: 1.5rem;
     }
-    
+
     .question-text {
         font-size: 1rem;
     }
-    
+
     #timer {
         font-size: 1.5rem;
+    }
+}
+
+/* ─── Print Styles ──────────────────────────────────────── */
+@media print {
+    body {
+        background: white;
+        animation: none;
+        color: #333;
+    }
+
+    .submit-btn,
+    .action-buttons,
+    .timer-container,
+    .timer-banner {
+        display: none;
+    }
+
+    .question-card,
+    .quiz-header,
+    .result-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        animation: none;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0;
     }
 }

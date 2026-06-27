@@ -1,47 +1,131 @@
+```bash
 #!/bin/bash
-# QuizWiz Build Script for Linux/Mac
 
-echo "========================================"
-echo "QuizWiz Build Script"
-echo "========================================"
+# ============================================================
+# QuizWiz Build Script
+# Linux / macOS
+# Java Servlet + JSP + JDBC + MySQL
+# ============================================================
+
+set -e
+
+echo ""
+echo "=========================================="
+echo "        QuizWiz Build Script"
+echo "=========================================="
 echo ""
 
-# Create classes directory if it doesn't exist
-if [ ! -d "webapp/WEB-INF/classes" ]; then
-    echo "Creating classes directory..."
-    mkdir -p webapp/WEB-INF/classes
+# ------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------
+
+PROJECT_NAME="QuizWiz"
+
+SRC_DIR="src"
+WEB_DIR="webapp"
+
+BUILD_DIR="build"
+CLASSES_DIR="$BUILD_DIR/classes"
+
+LIB_DIR="WEB-INF/lib"
+
+# ------------------------------------------------------------
+# Configure your Tomcat installation
+# ------------------------------------------------------------
+
+TOMCAT_HOME="/opt/tomcat"
+
+# Example macOS:
+# TOMCAT_HOME="/usr/local/Cellar/tomcat/10.1.0/libexec"
+
+# ------------------------------------------------------------
+# Check Java
+# ------------------------------------------------------------
+
+echo "Checking Java..."
+
+if ! command -v java >/dev/null 2>&1; then
+    echo ""
+    echo "ERROR: Java is not installed."
+    exit 1
 fi
 
-# Compile Java files
-echo "Compiling Java source files..."
-javac -cp "webapp/WEB-INF/lib/*" -d webapp/WEB-INF/classes \
-    src/com/quizwiz/model/*.java \
-    src/com/quizwiz/util/*.java \
-    src/com/quizwiz/servlet/*.java
+echo "Java detected."
 
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "========================================"
-    echo "Build Successful!"
-    echo "========================================"
-    echo ""
-    echo "Compiled classes are in: webapp/WEB-INF/classes"
-    echo ""
-    echo "Next steps:"
-    echo "1. Ensure MySQL is running"
-    echo "2. Run database/schema.sql in MySQL"
-    echo "3. Deploy webapp folder to Tomcat"
-    echo "4. Access: http://localhost:8080/QuizWiz/quiz"
-    echo ""
-else
-    echo ""
-    echo "========================================"
-    echo "Build Failed!"
-    echo "========================================"
-    echo ""
-    echo "Please check:"
-    echo "1. JDK is installed and in PATH"
-    echo "2. MySQL connector JAR is in webapp/WEB-INF/lib/"
-    echo "3. Source files have no syntax errors"
-    echo ""
-fi
+echo ""
+
+# ------------------------------------------------------------
+# Clean previous build
+# ------------------------------------------------------------
+
+echo "Cleaning previous build..."
+
+rm -rf "$BUILD_DIR"
+
+mkdir -p "$CLASSES_DIR"
+
+echo "Build directory created."
+
+echo ""
+
+# ------------------------------------------------------------
+# Find Java source files
+# ------------------------------------------------------------
+
+find "$SRC_DIR" -name "*.java" > sources.txt
+
+# ------------------------------------------------------------
+# Compile
+# ------------------------------------------------------------
+
+echo "Compiling Java sources..."
+
+javac \
+-classpath "$TOMCAT_HOME/lib/servlet-api.jar:$LIB_DIR/*" \
+-d "$CLASSES_DIR" \
+@sources.txt
+
+rm sources.txt
+
+echo ""
+echo "Compilation Successful."
+
+echo ""
+
+# ------------------------------------------------------------
+# Copy Web Resources
+# ------------------------------------------------------------
+
+echo "Copying web resources..."
+
+cp -R "$WEB_DIR" "$BUILD_DIR"
+
+mkdir -p "$BUILD_DIR/WEB-INF/classes"
+
+cp -R "$CLASSES_DIR/"* "$BUILD_DIR/WEB-INF/classes/" 2>/dev/null || true
+
+echo "Resources copied."
+
+echo ""
+
+# ------------------------------------------------------------
+# Build Summary
+# ------------------------------------------------------------
+
+echo "=========================================="
+echo "        BUILD SUCCESSFUL"
+echo "=========================================="
+
+echo ""
+echo "Project : $PROJECT_NAME"
+echo "Output  : $BUILD_DIR"
+echo ""
+
+echo "Deploy the contents of:"
+echo ""
+echo "    build/"
+echo ""
+echo "to your Apache Tomcat webapps directory."
+echo ""
+echo "Done."
+```

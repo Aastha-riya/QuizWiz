@@ -1,335 +1,569 @@
 # Design Document: QuizWiz Online Assessment Platform
 
-## Overview
+## Project Overview
 
-QuizWiz is a servlet-based web application that provides an online quiz platform with timed assessments. The system follows a traditional Java EE architecture using Servlets for request handling, JSP for view rendering, and JDBC for database access. The application runs on Apache Tomcat and uses MySQL for data persistence.
+QuizWiz is a modern Java-based online assessment platform developed using **Java Servlets, JSP, JSTL, JDBC, MySQL, HTML5, CSS3, and JavaScript**. The application provides a secure, responsive, and user-friendly environment where users can register, log in, attempt timed quizzes, and instantly view their results.
 
-## Architecture
+The project follows the **Model–View–Controller (MVC)** architecture to ensure proper separation of concerns, maintainability, and scalability.
 
-The application follows a Model-View-Controller (MVC) pattern:
+---
 
-- **Model**: Question data objects and database access layer
-- **View**: JSP pages for quiz display and results
-- **Controller**: Servlets that handle HTTP requests and coordinate between model and view
+# Design Objectives
 
-### Component Diagram
+The primary goals of QuizWiz are:
 
-```
-┌─────────────┐
-│   Browser   │
-└──────┬──────┘
-       │ HTTP Request
-       ▼
-┌─────────────────────────────────┐
-│      Apache Tomcat Server       │
-│  ┌───────────────────────────┐  │
-│  │   QuizServlet (GET)       │  │
-│  │   - Fetch questions       │  │
-│  │   - Forward to quiz.jsp   │  │
-│  └───────────┬───────────────┘  │
-│              │                   │
-│  ┌───────────▼───────────────┐  │
-│  │   SubmitServlet (POST)    │  │
-│  │   - Process answers       │  │
-│  │   - Calculate score       │  │
-│  │   - Forward to result.jsp │  │
-│  └───────────┬───────────────┘  │
-│              │                   │
-│  ┌───────────▼───────────────┐  │
-│  │   DBConnection Utility    │  │
-│  │   - JDBC connection pool  │  │
-│  │   - PreparedStatements    │  │
-│  └───────────┬───────────────┘  │
-└──────────────┼───────────────────┘
-               │ JDBC
-               ▼
-        ┌─────────────┐
-        │    MySQL    │
-        │ quizwiz_db  │
-        └─────────────┘
+* Develop a clean and responsive online assessment platform.
+* Follow Java EE best practices using MVC architecture.
+* Separate presentation, business logic, and database operations.
+* Provide an engaging user experience through modern UI design.
+* Ensure secure authentication and reliable quiz submission.
+* Create reusable, maintainable, and scalable code.
+
+---
+
+# System Architecture
+
+QuizWiz follows the MVC architecture.
+
+```text
+                    User
+                      │
+                      ▼
+                 JSP Pages
+              (Presentation Layer)
+                      │
+                      ▼
+             Java Servlets (Controller)
+                      │
+                      ▼
+             Business Logic Layer
+                      │
+                      ▼
+                 DAO (JDBC Layer)
+                      │
+                      ▼
+                MySQL Database
 ```
 
-## Components and Interfaces
+---
 
-### 1. Database Layer
+# MVC Components
 
-**DBConnection.java**
-- **Purpose**: Provides JDBC connection management
-- **Methods**:
-  - `getConnection()`: Returns a Connection object to MySQL database
-- **Configuration**:
-  - URL: `jdbc:mysql://localhost:3306/quizwiz_db`
-  - Driver: `com.mysql.cj.jdbc.Driver`
-  - Credentials: Configurable username/password
+## Model Layer
 
-### 2. Controller Layer
+Responsible for representing application data.
 
-**QuizServlet.java**
-- **URL Pattern**: `/quiz`
-- **HTTP Method**: GET
-- **Responsibilities**:
-  - Fetch all questions from database
-  - Create Question objects
-  - Set questions as request attribute
-  - Forward to quiz.jsp
-- **Key Methods**:
-  - `doGet(HttpServletRequest, HttpServletResponse)`: Main handler
+Models include:
 
-**SubmitServlet.java**
-- **URL Pattern**: `/submit`
-- **HTTP Method**: POST
-- **Responsibilities**:
-  - Extract user answers from request parameters
-  - Fetch correct answers from database
-  - Compare answers and calculate score
-  - Set score as request attribute
-  - Forward to result.jsp
-- **Key Methods**:
-  - `doPost(HttpServletRequest, HttpServletResponse)`: Main handler
+* User
+* Question
+* Result
 
-### 3. View Layer
+Responsibilities
 
-**quiz.jsp**
-- **Purpose**: Display quiz questions with timer
-- **Features**:
-  - Form with radio buttons for each question
-  - JavaScript countdown timer (10 minutes)
-  - Auto-submit on timer expiration
-  - Styled with CSS for card layout
+* Store entity data
+* Transfer information between layers
+* Represent database tables
 
-**result.jsp**
-- **Purpose**: Display quiz results
-- **Features**:
-  - Show score (e.g., "You scored 4/5")
-  - "Try Again" button linking back to quiz
+---
 
-**style.css**
-- **Purpose**: Provide modern, clean styling
-- **Features**:
-  - Card-based question layout
-  - Responsive design
-  - Highlighted submit button
-  - Timer display styling
+## View Layer
 
-## Data Models
+Implemented using JSP and JSTL.
 
-### Question Model
+Pages include
 
-```java
-class Question {
-    private int id;
-    private String questionText;
-    private String optionA;
-    private String optionB;
-    private String optionC;
-    private String optionD;
-    private String correctAnswer; // 'A', 'B', 'C', or 'D'
-    
-    // Getters and setters
-}
+* Login
+* Register
+* Quiz
+* Result
+* 404 Error
+* 500 Error
+
+Responsibilities
+
+* Display information
+* Collect user input
+* Render quiz questions
+* Display results
+* Handle user interaction
+
+---
+
+## Controller Layer
+
+Implemented using Servlets.
+
+Controllers include
+
+* LoginServlet
+* RegisterServlet
+* QuizServlet
+* SubmitServlet
+* LogoutServlet
+
+Responsibilities
+
+* Handle HTTP requests
+* Validate user input
+* Manage user sessions
+* Call DAO methods
+* Forward responses to JSP pages
+
+---
+
+# Database Design
+
+## Users Table
+
+| Field    | Type    |
+| -------- | ------- |
+| id       | INT     |
+| username | VARCHAR |
+| email    | VARCHAR |
+| password | VARCHAR |
+
+---
+
+## Questions Table
+
+| Field          | Type    |
+| -------------- | ------- |
+| id             | INT     |
+| question_text  | TEXT    |
+| option_a       | VARCHAR |
+| option_b       | VARCHAR |
+| option_c       | VARCHAR |
+| option_d       | VARCHAR |
+| correct_answer | CHAR(1) |
+
+---
+
+## Results Table
+
+| Field        | Type      |
+| ------------ | --------- |
+| id           | INT       |
+| user_id      | INT       |
+| score        | INT       |
+| total        | INT       |
+| submitted_at | TIMESTAMP |
+
+---
+
+# User Interface Design
+
+QuizWiz uses a modern card-based interface.
+
+Design highlights include:
+
+* Responsive layout
+* Rounded cards
+* Soft shadows
+* Modern typography
+* Animated gradient background
+* Smooth transitions
+* Hover animations
+* Glassmorphism timer
+* Interactive buttons
+* Responsive forms
+
+---
+
+# CSS Design
+
+The stylesheet has been organized into reusable sections.
+
+## CSS Variables
+
+Reusable variables include
+
+* Primary color
+* Secondary color
+* Warning color
+* Danger color
+* Success color
+* Surface color
+* Shadow styles
+
+Benefits
+
+* Consistent styling
+* Easier maintenance
+* Future theme support
+
+---
+
+## Typography
+
+Font Family
+
+* Google Poppins
+
+Reasons
+
+* Improved readability
+* Modern appearance
+* Professional interface
+
+---
+
+## Animations
+
+Implemented animations include
+
+* Animated gradient background
+* Fade-in page animation
+* Floating quiz header
+* Button hover animation
+* Ripple button effect
+* Card hover animation
+* Timer pulse animation
+* Critical timer flash
+* Progress bar animation
+
+Animations improve user engagement while maintaining smooth performance.
+
+---
+
+# Responsive Design
+
+The application is optimized for
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+Responsive improvements
+
+* Flexible containers
+* Responsive buttons
+* Optimized spacing
+* Mobile typography
+* Responsive error pages
+
+---
+
+# Quiz Design
+
+Each quiz page contains
+
+* Countdown timer
+* Animated progress bar
+* Dynamic question rendering
+* Multiple-choice options
+* Loading state
+* Automatic submission
+* Submit button protection
+
+Questions are loaded dynamically from the database.
+
+---
+
+# Timer Design
+
+The timer is implemented using JavaScript.
+
+Features include
+
+* Countdown timer
+* Animated progress bar
+* Warning mode
+* Critical mode
+* Flash animation
+* Automatic submission
+* Timer banner support
+
+Server-side validation is also performed using the hidden quiz start timestamp.
+
+---
+
+# Result Page Design
+
+The result page was redesigned using JSTL and EL.
+
+Features
+
+* Dynamic score calculation
+* Percentage formatting
+* Performance messages
+* Dynamic result icons
+* Responsive layout
+* Error handling
+
+Performance categories
+
+* Excellent
+* Good
+* Needs Improvement
+
+---
+
+# Error Handling Design
+
+## Custom 404 Page
+
+Features
+
+* Custom astronaut SVG illustration
+* Requested URL display
+* Navigation shortcuts
+* Responsive design
+* Professional styling
+
+Navigation options
+
+* Home
+* Login
+* Register
+* Start Quiz
+
+---
+
+## Custom 500 Page
+
+Features
+
+* Error reference ID
+* Timestamp
+* Retry button
+* Contact support section
+* Development-mode stack trace
+* Secure production mode
+
+Stack traces remain hidden in production to avoid exposing sensitive server information.
+
+---
+
+# Security Design
+
+Current implementation
+
+* Session-based authentication
+* JSTL output escaping using `<c:out>`
+* Client-side validation
+* Server-side validation
+* Duplicate submission prevention
+* Development mode protection
+* Error reference IDs
+* Hidden quiz start timestamp
+* Prepared SQL statements
+
+Future enhancements
+
+* BCrypt password hashing
+* CSRF protection
+* Role-based authorization
+* Security headers
+* HTTPS enforcement
+* Rate limiting
+
+---
+
+# Accessibility
+
+Accessibility improvements include
+
+* ARIA attributes for progress bar
+* Keyboard-friendly controls
+* Reduced motion support
+* Focus states
+* Semantic HTML structure
+* Responsive typography
+
+---
+
+# Browser Compatibility
+
+Implemented compatibility improvements
+
+* JavaScript fallback for browsers without CSS `:has()` support
+* Graceful degradation
+* Responsive media queries
+
+---
+
+# Performance Optimizations
+
+Implemented optimizations
+
+* CSS variables
+* Reusable components
+* Lightweight SVG graphics
+* Organized stylesheets
+* Optimized transitions
+* Reduced duplicated CSS
+
+---
+
+# Code Quality Improvements
+
+The project has been progressively modernized.
+
+Changes include
+
+* Reduced JSP scriptlets
+* Migration to JSTL
+* Cleaner page structure
+* Better code organization
+* Reusable CSS architecture
+* Modular JavaScript
+
+---
+
+# Quiz Workflow
+
+```text
+User Login
+      │
+      ▼
+Load Quiz
+      │
+      ▼
+Start Timer
+      │
+      ▼
+Answer Questions
+      │
+      ▼
+Submit Quiz
+      │
+      ▼
+Server Validation
+      │
+      ▼
+Score Calculation
+      │
+      ▼
+Display Result
 ```
 
-### Database Schema
+If the timer reaches zero, the quiz is submitted automatically.
 
-**Table: questions**
+---
 
-| Column          | Type         | Constraints                    |
-|-----------------|--------------|--------------------------------|
-| id              | INT          | PRIMARY KEY, AUTO_INCREMENT    |
-| question_text   | VARCHAR(500) | NOT NULL                       |
-| option_a        | VARCHAR(200) | NOT NULL                       |
-| option_b        | VARCHAR(200) | NOT NULL                       |
-| option_c        | VARCHAR(200) | NOT NULL                       |
-| option_d        | VARCHAR(200) | NOT NULL                       |
-| correct_answer  | VARCHAR(1)   | NOT NULL, CHECK IN ('A','B','C','D') |
+# Error Workflow
 
-### Request/Response Flow
-
-**Quiz Display Flow:**
-1. User requests `/quiz`
-2. QuizServlet.doGet() executes
-3. Query: `SELECT * FROM questions`
-4. Results mapped to List<Question>
-5. Request attribute: `questions`
-6. Forward to quiz.jsp
-7. JSP renders form with questions
-
-**Quiz Submission Flow:**
-1. User submits form to `/submit`
-2. SubmitServlet.doPost() executes
-3. Extract parameters: `answer_1`, `answer_2`, etc.
-4. Query: `SELECT id, correct_answer FROM questions`
-5. Compare user answers with correct answers
-6. Calculate: `score = correctCount / totalQuestions`
-7. Request attributes: `score`, `total`
-8. Forward to result.jsp
-9. JSP displays results
-
-## Correctness Properties
-
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
-
-### Property 1: Database Connection Validity
-
-*For any* database connection request, if the MySQL server is running and credentials are correct, then the connection should be successfully established and return a non-null Connection object.
-
-**Validates: Requirements 2.1, 2.3**
-
-### Property 2: Question Retrieval Completeness
-
-*For any* state of the questions table, when QuizServlet fetches questions, the number of Question objects in the request attribute should equal the number of rows in the questions table.
-
-**Validates: Requirements 3.1**
-
-### Property 3: Score Calculation Accuracy
-
-*For any* set of user answers and correct answers, the calculated score should equal the count of matching answers divided by the total number of questions.
-
-**Validates: Requirements 5.3, 5.4**
-
-### Property 4: Timer Auto-Submit
-
-*For any* quiz session, when the countdown timer reaches 00:00, the quiz form should be automatically submitted without user interaction.
-
-**Validates: Requirements 4.3**
-
-### Property 5: Answer Comparison Correctness
-
-*For any* question ID and user answer, the answer should be marked correct if and only if it matches the correct_answer value in the database for that question ID.
-
-**Validates: Requirements 5.3**
-
-### Property 6: Resource Cleanup
-
-*For any* database operation, all JDBC resources (Connection, PreparedStatement, ResultSet) should be properly closed in a finally block or try-with-resources, regardless of whether the operation succeeds or fails.
-
-**Validates: Requirements 2.4, 7.1**
-
-## Error Handling
-
-### Database Errors
-
-- **SQLException**: Catch and log with descriptive messages
-- **Connection failures**: Display user-friendly error page
-- **Query failures**: Log stack trace and return empty result set with error flag
-
-### Servlet Errors
-
-- **Missing parameters**: Validate request parameters and provide defaults
-- **Invalid data**: Validate input format before processing
-- **Forward failures**: Log error and send HTTP 500 response
-
-### Exception Handling Pattern
-
-```java
-Connection conn = null;
-PreparedStatement stmt = null;
-ResultSet rs = null;
-try {
-    conn = DBConnection.getConnection();
-    stmt = conn.prepareStatement(sql);
-    rs = stmt.executeQuery();
-    // Process results
-} catch (SQLException e) {
-    e.printStackTrace();
-    // Log error and handle gracefully
-} finally {
-    if (rs != null) try { rs.close(); } catch (SQLException e) { }
-    if (stmt != null) try { stmt.close(); } catch (SQLException e) { }
-    if (conn != null) try { conn.close(); } catch (SQLException e) { }
-}
+```text
+Unexpected Error
+        │
+        ▼
+Generate Error ID
+        │
+        ▼
+Log Exception
+        │
+        ▼
+Display Custom Error Page
+        │
+        ▼
+Retry or Contact Support
 ```
 
-## Testing Strategy
+---
 
-### Unit Testing
+# Technologies Used
 
-The testing strategy will focus on specific examples and edge cases:
+## Backend
 
-- **DBConnection**: Test successful connection, failed connection with wrong credentials
-- **QuizServlet**: Test question retrieval with empty database, with multiple questions
-- **SubmitServlet**: Test score calculation with all correct, all wrong, partial correct
-- **Timer**: Test countdown display, auto-submit trigger
-- **Edge Cases**: Empty question text, special characters in options, null answers
+* Java
+* Jakarta Servlet
+* JSP
+* JSTL
+* JDBC
 
-### Property-Based Testing
+## Frontend
 
-Property-based tests will validate universal correctness properties using a Java PBT library (e.g., jqwik or QuickTheories):
+* HTML5
+* CSS3
+* JavaScript
 
-- **Minimum 100 iterations per property test**
-- Each test tagged with: `Feature: quizwiz-online-assessment, Property N: [property text]`
-- Properties to test:
-  - Score calculation accuracy across random answer combinations
-  - Question retrieval completeness with varying database states
-  - Resource cleanup verification across different error scenarios
+## Database
 
-### Integration Testing
+* MySQL
 
-- End-to-end flow: Quiz display → Answer selection → Submission → Result display
-- Database integration: Verify JDBC operations against actual MySQL instance
-- Servlet integration: Test request/response handling with mock HTTP objects
+## Server
 
-### Manual Testing
+* Apache Tomcat
 
-- Visual verification of UI styling and responsiveness
-- Timer countdown accuracy and auto-submit behavior
-- Cross-browser compatibility (Chrome, Firefox, Edge)
+## Development Tools
 
-## Implementation Notes
+* IntelliJ IDEA
+* Git
+* GitHub
 
-### Project Structure
+---
 
-```
-QuizWiz/
-├── src/
-│   └── com/
-│       └── quizwiz/
-│           ├── util/
-│           │   └── DBConnection.java
-│           └── servlet/
-│               ├── QuizServlet.java
-│               └── SubmitServlet.java
-├── webapp/
-│   ├── WEB-INF/
-│   │   ├── web.xml
-│   │   ├── classes/
-│   │   └── lib/
-│   │       └── mysql-connector-java-8.0.x.jar
-│   ├── css/
-│   │   └── style.css
-│   ├── js/
-│   │   └── timer.js
-│   ├── quiz.jsp
-│   └── result.jsp
-└── database/
-    └── schema.sql
-```
+# Design Decisions
 
-### Deployment Configuration
+## Why MVC?
 
-**web.xml Configuration:**
-- Servlet mappings for QuizServlet and SubmitServlet
-- Welcome file: quiz.jsp
-- Error page mappings for 404, 500
+* Better separation of concerns
+* Easier maintenance
+* Improved scalability
+* Cleaner project structure
 
-**Tomcat Configuration:**
-- Context path: `/QuizWiz`
-- Port: 8080
-- MySQL connector JAR in WEB-INF/lib
+---
 
-### Security Considerations
+## Why JSTL?
 
-- **SQL Injection Prevention**: Use PreparedStatements exclusively
-- **Input Validation**: Validate all request parameters
-- **Session Management**: Consider adding session tracking for future enhancements
-- **Database Credentials**: Store in configuration file, not hardcoded
+* Cleaner JSP pages
+* Reduced Java code
+* Improved security
+* Better readability
 
-## Future Enhancements
+---
 
-- User authentication and session management
-- Question categories and difficulty levels
-- Randomized question order
-- Detailed answer review after submission
-- Admin panel for question management
-- Multiple quiz support
-- Score history and analytics
+## Why CSS Variables?
+
+* Consistent design
+* Easier maintenance
+* Simplified theme customization
+
+---
+
+## Why Glassmorphism?
+
+* Modern visual appeal
+* Improved UI aesthetics
+* Better user engagement
+
+---
+
+## Why Custom Error Pages?
+
+* Better user experience
+* Professional appearance
+* Easier debugging
+* Improved navigation
+
+---
+
+# Future Enhancements
+
+Planned features include
+
+* Admin Dashboard
+* Question Management
+* User Management
+* Password Reset
+* Email Verification
+* Quiz Categories
+* Difficulty Levels
+* Leaderboard
+* Quiz History
+* Detailed Result Analysis
+* Downloadable PDF Certificates
+* User Profile
+* Dark Mode
+* REST API
+* Docker Deployment
+* Cloud Deployment
+* Analytics Dashboard
+
+---
+
+# Conclusion
+
+QuizWiz has evolved from a basic online quiz application into a modern Java web application that emphasizes clean architecture, responsive design, maintainable code, accessibility, security, and user experience. The use of the MVC architecture, modern CSS techniques, JSTL, responsive layouts, custom error handling, and an interactive quiz interface makes the application suitable as a portfolio-quality project while providing a solid foundation for future enhancements and enterprise-level features.

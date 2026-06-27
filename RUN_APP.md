@@ -1,101 +1,406 @@
-# Run QuizWiz - Step by Step
+# QuizWiz - Run Application Guide
 
-## ⚠️ Important: Manual Steps Required
+## Overview
 
-I cannot run these commands automatically because they require:
-- Your MySQL password
-- Java and MySQL to be in your system PATH
+This guide explains how to set up, build, and run the QuizWiz Online Assessment Platform on your local machine.
 
-## 🎯 Here's What YOU Need to Do:
+---
 
-### Step 1: Add MySQL to PATH (One-time setup)
+# Prerequisites
 
-1. Press `Win + X` → Select "System"
-2. Click "Advanced system settings"
-3. Click "Environment Variables"
-4. Find "Path" under "System variables"
-5. Click "Edit"
-6. Click "New"
-7. Add: `C:\Program Files\MySQL\MySQL Server 8.0\bin`
-8. Click OK on all dialogs
-9. **Close and reopen Command Prompt**
+Ensure the following software is installed before running the project.
 
-### Step 2: Add Java to PATH (One-time setup)
+| Software                | Version                       |
+| ----------------------- | ----------------------------- |
+| Java JDK                | 17 or later                   |
+| Apache Tomcat           | 10.1 or later                 |
+| MySQL Server            | 8.0 or later                  |
+| Git                     | Latest                        |
+| IntelliJ IDEA / Eclipse | Latest                        |
+| Web Browser             | Chrome, Firefox, Edge, Safari |
 
-1. Find your Java installation (e.g., `C:\Program Files\Java\jdk-11\bin`)
-2. Follow same steps as above to add Java bin folder to PATH
-3. **Close and reopen Command Prompt**
+---
 
-### Step 3: Setup Database
+# Step 1: Clone the Repository
 
-Open **NEW** Command Prompt and run:
-```cmd
-cd C:\Users\Yash Gupta\IdeaProjects\QuizWiz
-mysql -u root -p < database\schema.sql
+```bash
+git clone https://github.com/Aastha-riya/QuizWiz.git
 ```
-Enter your MySQL password.
 
-### Step 4: Build Project
-```cmd
+Navigate to the project directory.
+
+```bash
+cd QuizWiz
+```
+
+---
+
+# Step 2: Create the Database
+
+Start your MySQL server.
+
+Open the MySQL client and create the database.
+
+```sql
+CREATE DATABASE quizwiz;
+```
+
+---
+
+# Step 3: Import the Database
+
+Import the provided SQL file.
+
+```bash
+mysql -u root -p quizwiz < database/quizwiz.sql
+```
+
+Verify that the following tables exist.
+
+* Users
+* Questions
+* Results
+
+---
+
+# Step 4: Configure Database Connection
+
+Open the database configuration file and update the following values.
+
+```properties
+db.url=jdbc:mysql://localhost:3306/quizwiz
+db.username=root
+db.password=your_password
+```
+
+Save the file.
+
+---
+
+# Step 5: Add Required Libraries
+
+Ensure the following libraries are available.
+
+* Jakarta Servlet API
+* Jakarta JSP API
+* JSTL
+* MySQL Connector/J
+
+If you are not using Maven, place the required JAR files inside:
+
+```text
+WEB-INF/lib/
+```
+
+---
+
+# Step 6: Import the Project
+
+Open your IDE.
+
+### IntelliJ IDEA
+
+1. Open IntelliJ IDEA.
+2. Select **Open**.
+3. Choose the QuizWiz project folder.
+4. Wait for indexing to complete.
+
+### Eclipse
+
+1. Open Eclipse.
+2. Select **Import Existing Project**.
+3. Choose the QuizWiz directory.
+4. Finish the import.
+
+---
+
+# Step 7: Build the Project
+
+## Windows
+
+Run:
+
+```bat
 build.bat
 ```
 
-### Step 5: Deploy to Tomcat
+## Linux
 
-**Option A: Manual Copy**
-1. Copy `webapp` folder
-2. Paste to `C:\apache-tomcat-9.0.x\webapps\`
-3. Rename to `QuizWiz`
-
-**Option B: Using Command**
-```cmd
-xcopy /E /I webapp "C:\apache-tomcat-9.0.x\webapps\QuizWiz"
+```bash
+chmod +x build.sh
+./build.sh
 ```
-(Replace `C:\apache-tomcat-9.0.x` with your actual Tomcat path)
 
-### Step 6: Start Tomcat
-```cmd
-cd C:\apache-tomcat-9.0.x\bin
+## macOS
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+A successful build creates the build output without compilation errors.
+
+---
+
+# Step 8: Configure Apache Tomcat
+
+Locate your Tomcat installation.
+
+Example locations
+
+Windows
+
+```text
+C:\Program Files\Apache Software Foundation\Tomcat 10.1
+```
+
+Linux
+
+```text
+/opt/tomcat
+```
+
+macOS
+
+```text
+/usr/local/tomcat
+```
+
+Copy the application (or generated WAR file) into the Tomcat `webapps` directory.
+
+---
+
+# Step 9: Start Tomcat
+
+## Windows
+
+```bat
 startup.bat
 ```
 
-### Step 7: Open Browser
+## Linux
+
+```bash
+./startup.sh
 ```
-http://localhost:8080/QuizWiz/quiz
+
+## macOS
+
+```bash
+./startup.sh
+```
+
+Wait until Tomcat finishes starting.
+
+---
+
+# Step 10: Open the Application
+
+Open your browser and navigate to:
+
+```text
+http://localhost:8080/QuizWiz/
 ```
 
 ---
 
-## 🚀 Quick Alternative (If PATH is already set)
+# Application Workflow
 
-If Java and MySQL are already in your PATH, just run these commands:
+1. Register a new user.
+2. Log in with your credentials.
+3. Start the quiz.
+4. Answer all questions.
+5. Monitor the countdown timer.
+6. Submit the quiz or allow auto-submit.
+7. View your score and performance.
 
-```cmd
-cd C:\Users\Yash Gupta\IdeaProjects\QuizWiz
-mysql -u root -p < database\schema.sql
+---
+
+# Features to Verify
+
+## Authentication
+
+* User registration
+* Login
+* Logout
+* Session handling
+
+---
+
+## Quiz
+
+* Questions load correctly
+* Radio button selection
+* Countdown timer
+* Progress bar
+* Automatic submission
+* Manual submission
+
+---
+
+## Results
+
+* Score displayed
+* Percentage calculated
+* Performance message shown
+
+---
+
+## Error Handling
+
+Verify custom pages.
+
+* 404 Not Found
+* 500 Internal Server Error
+
+---
+
+# Troubleshooting
+
+## Java Not Found
+
+Verify Java installation.
+
+```bash
+java -version
+```
+
+If Java is not found, configure the `JAVA_HOME` environment variable.
+
+---
+
+## MySQL Connection Failed
+
+Check:
+
+* MySQL service is running.
+* Database exists.
+* Username and password are correct.
+* JDBC URL is correct.
+
+---
+
+## Tomcat Not Starting
+
+Check:
+
+* Port 8080 is available.
+* Correct Tomcat version is installed.
+* `JAVA_HOME` is configured.
+
+View the Tomcat logs for details.
+
+---
+
+## CSS or JavaScript Not Loading
+
+Verify:
+
+* Files exist in the `webapp/css` and `webapp/js` directories.
+* Static resource paths use the correct context path.
+* Browser cache is cleared.
+
+---
+
+## Compilation Errors
+
+Verify:
+
+* Java 17+ is installed.
+* Required libraries are present.
+* Project dependencies are correctly configured.
+
+---
+
+# Build Scripts
+
+Windows
+
+```bat
 build.bat
-xcopy /E /I webapp "C:\apache-tomcat-9.0.x\webapps\QuizWiz"
-cd C:\apache-tomcat-9.0.x\bin
-startup.bat
 ```
 
-Then open: `http://localhost:8080/QuizWiz/quiz`
+Linux / macOS
+
+```bash
+./build.sh
+```
 
 ---
 
-## ✅ Success Indicators
+# Default URL
 
-You'll know it's working when:
-- Database setup: No errors, returns to prompt
-- Build: Shows "Build Successful!"
-- Tomcat: New window opens with logs
-- Browser: Quiz page loads with 5 questions and timer
+```text
+http://localhost:8080/QuizWiz/
+```
 
 ---
 
-## 🆘 If You Get Stuck
+# Recommended Browser
 
-Tell me:
-- Which step you're on
-- What error you see
-- And I'll help you fix it!
+* Google Chrome (Recommended)
+* Mozilla Firefox
+* Microsoft Edge
+* Safari
+
+---
+
+# Useful Documentation
+
+The repository includes:
+
+* `README.md`
+* `DESIGN.md`
+* `REQUIREMENTS.md`
+* `IMPLEMENTATION_PLAN.md`
+* `DEPLOYMENT_CHECKLIST.md`
+* `RUN_APP.md`
+
+---
+
+# Quick Start
+
+```text
+Clone Repository
+        │
+        ▼
+Create Database
+        │
+        ▼
+Import SQL Schema
+        │
+        ▼
+Configure Database Credentials
+        │
+        ▼
+Add Required Libraries
+        │
+        ▼
+Build Project
+        │
+        ▼
+Deploy to Apache Tomcat
+        │
+        ▼
+Start Tomcat
+        │
+        ▼
+Open:
+http://localhost:8080/QuizWiz/
+```
+
+---
+
+# Expected Result
+
+If everything is configured correctly:
+
+* The application opens successfully.
+* Users can register and log in.
+* Quiz questions load from the database.
+* The timer starts automatically.
+* Quiz submission works correctly.
+* Results are calculated instantly.
+* Custom error pages appear when appropriate.
+
+Congratulations! 🎉 QuizWiz is now ready to use.
