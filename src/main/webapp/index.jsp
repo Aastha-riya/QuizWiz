@@ -1,4 +1,4 @@
 <%@ page language="java" %>
 <%
-    response.sendRedirect("login");
+    response.sendRedirect("quiz.jsp");
 %>
